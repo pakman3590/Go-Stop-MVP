@@ -1,17 +1,19 @@
 import React from 'react';
 import styled from 'styled-components';
 
-const Capture = styled.div`
+import Card from './Card.jsx';
+
+const CaptureDiv = styled.div`
   height: 25%;
   width: 90%;
 
   border: 2px solid #000000;
 `;
 
-function PlayerCapture(props) {
+function Capture(props) {
   const { cards } = props;
   return (
-    <Capture>
+    <CaptureDiv>
       {cards.map((card) => (
         <Card
           key={card.cardId}
@@ -20,8 +22,8 @@ function PlayerCapture(props) {
           flipProp={true}
         />
       ))}
-    </Capture>
+    </CaptureDiv>
   );
 }
 
-export default PlayerCapture;
+export default Capture;
