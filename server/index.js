@@ -36,13 +36,20 @@ app.get('/new', (req, res) => {
     deck: newDeck,
   });
   newGame.save()
-    .then((response) => res.send(response));
+    .then((response) => res.send(getPlayerStates(1, response)));
 });
 
 app.get('/:gameId/:playerId', (req, res) => {
   const { gameId, playerId } = req.params;
   console.log(`Fetching game ${gameId} for player ${playerId}!`);
-  res.send(getPlayerStates(gameId, playerId));
+  Game.findOne({ _id: gameId }, (err, results) => {
+    if (err) {
+      console.log(err);
+      res.sendStatus(404);
+    } else {
+      res.send(getPlayerStates(playerId, results));
+    }
+  });
 });
 
 app.listen(PORT, () => console.log(`Listening on port ${PORT}`));
