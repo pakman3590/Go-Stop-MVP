@@ -17,19 +17,15 @@ const Hand = styled.div`
 function PlayerHand(props) {
   const { hand, handleCardClick } = props;
 
-  console.log(hand)
-
   return (
     <Hand>
-      {hand.map((card) => {
-        const { cardId, cardMonth } = card;
-        return <HandCard
+      {hand.map((cardId) => (
+        <HandCard
         key={cardId}
         cardId={cardId}
-        cardMonth={cardMonth}
         handleCardClick={handleCardClick}
-        />;
-      })}
+        />
+      ))}
     </Hand>
   );
 }

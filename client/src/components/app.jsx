@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
+import regeneratorRuntime from 'regenerator-runtime';
 
 import fetchState from '../requests';
 
@@ -34,29 +35,67 @@ function App() {
   const [fieldState, setFieldState] = useState(null);
 
   const gameRefresh = () => {
+    console.log('refreshing game')
     setTimeout(() => {
       fetchState(gameId, playerId)
         .then((response) => {
-          const { player, opp, field } = response.data;
-          setPlayerHand(player.hand);
-          setPlayerCapture(player.captured);
-          setOppHand(opp.cards);
-          setOppCapture(opp.captured);
-          setFieldState(field);
-        }).then(() => {
-          if (!active) {
-            setActive(true);
+          const {
+            curr, player, opp, field,
+          } = response.data;
+          console.log(curr, playerId);
+          if (curr !== playerId) {
+            setPlayerHand(player.hand);
+            setPlayerCapture(player.captured);
+            setOppHand(opp.cards);
+            setOppCapture(opp.captured);
+            setFieldState(field);
           }
+        }).then(() => {
           setTimer(!timer);
         })
         .catch((err) => console.log(err));
     }, 5000);
   };
 
-  useEffect(gameRefresh, [timer, gameId, playerId]);
+  const gameLoad = () => {
+    console.log('loading game')
+    fetchState(gameId, playerId)
+      .then((response) => {
+        const {
+          player, opp, field,
+        } = response.data;
+        setPlayerHand(player.hand);
+        setPlayerCapture(player.captured);
+        setOppHand(opp.cards);
+        setOppCapture(opp.captured);
+        setFieldState(field);
+      }).then(() => {
+        setActive(true);
+        gameRefresh();
+      })
+      .catch((err) => console.log(err));
+  };
 
-  const handleCardClick = (cardId, cardMonth) => {
-    // PUT REQUEST TO SERVER
+  useEffect(gameLoad, []);
+  useEffect(gameRefresh, [timer]);
+
+  const handleCardClick = async (cardId) => {
+    console.log(`clicked ${cardId}`);
+    const index = playerHand.indexOf(cardId);
+    const newHand = playerHand.slice();
+    newHand.splice(index, 1);
+    setPlayerHand(newHand);
+    setFieldState([...fieldState, cardId]);
+    const cardMonth = cardId.slice(0, 3);
+    await setTimeout(() => {}, 500);
+    fieldState.forEach((fieldCardId, fieldIndex) => {
+      if (cardMonth === fieldCardId.slice(0, 3)) {
+        const newField = fieldState.slice();
+        newField.splice(fieldIndex, 1);
+        setFieldState(newField);
+        setPlayerCapture([...playerCapture, cardId, fieldCardId]);
+      }
+    });
   };
 
   if (active) {

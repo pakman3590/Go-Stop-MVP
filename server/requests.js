@@ -2,9 +2,12 @@ const { dummy } = require('./dummydb');
 
 module.exports = {
   getPlayerStates(gameId, playerId) {
-    const { player1, player2, field } = dummy[gameId];
+    const {
+      curr, player1, player2, field,
+    } = dummy[gameId];
     if (playerId === 1) {
       return {
+        curr,
         player: player1,
         opp: {
           cards: player2.hand.length,
@@ -15,6 +18,7 @@ module.exports = {
       };
     }
     return {
+      curr,
       player: player2,
       opp: {
         cards: player1.hand.length,

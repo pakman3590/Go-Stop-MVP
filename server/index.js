@@ -14,10 +14,10 @@ app.use('*', (req, res, next) => {
 });
 app.use(express.static(path.resolve(__dirname, '../client/dist')));
 
-app.get('/fetch/:gameId/:player', (req, res) => {
-  const { gameId, player } = req.params;
-  console.log(`Fetching game ${gameId} for player ${player}!`);
-  res.send(getPlayerStates(gameId, player));
+app.get('/:gameId/:playerId', (req, res) => {
+  const { gameId, playerId } = req.params;
+  console.log(`Fetching game ${gameId} for player ${playerId}!`);
+  res.send(getPlayerStates(gameId, playerId));
 });
 
 app.listen(PORT, () => console.log(`Listening on port ${PORT}`));

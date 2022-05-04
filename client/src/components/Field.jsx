@@ -17,11 +17,10 @@ function Field(props) {
   return (
     <FieldDiv>
       <div>Playing Field</div>
-        {field.map((card) => (
+        {field.map((cardId) => (
         <Card
-          key={card.cardId}
-          cardIdProp={card.cardId}
-          cardMonthProp={card.cardMonth}
+          key={cardId}
+          cardIdProp={cardId}
           flipProp={true}
           hand={false}
         />
