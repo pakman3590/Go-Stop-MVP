@@ -3,7 +3,6 @@ const mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost:27017/gostop');
 
 const gameSchema = new mongoose.Schema({
-  curr: Number,
   player1: {
     hand: Array,
     captured: Array,
@@ -16,6 +15,7 @@ const gameSchema = new mongoose.Schema({
   },
   field: Array,
   deck: Array,
+  turn: Number,
 });
 
 const Game = mongoose.model('Game', gameSchema);
