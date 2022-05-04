@@ -2,6 +2,8 @@ const express = require('express');
 const path = require('path');
 
 const { getPlayerStates } = require('./requests');
+const { shuffleDeck } = require('./deck');
+const { Game } = require('./db/db');
 
 const app = express();
 
@@ -13,6 +15,29 @@ app.use('*', (req, res, next) => {
   next();
 });
 app.use(express.static(path.resolve(__dirname, '../client/dist')));
+
+app.get('/new', (req, res) => {
+  // generate random deck
+  const newDeck = shuffleDeck();
+  // send deck to dbms for new full game
+  const newGame = new Game({
+    curr: 1,
+    player1: {
+      hand: [],
+      captured: [],
+      points: 0,
+    },
+    player2: {
+      hand: [],
+      captured: [],
+      points: 0,
+    },
+    field: [],
+    deck: newDeck,
+  });
+  newGame.save()
+    .then((response) => res.send(response));
+});
 
 app.get('/:gameId/:playerId', (req, res) => {
   const { gameId, playerId } = req.params;
