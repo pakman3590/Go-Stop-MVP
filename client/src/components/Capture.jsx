@@ -7,6 +7,9 @@ const CaptureDiv = styled.div`
   height: 25%;
   width: 90%;
 
+  display: flex;
+  flex-flow: row wrap;
+
   border: 2px solid #000000;
 `;
 

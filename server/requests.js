@@ -10,7 +10,7 @@ module.exports = {
         curr,
         player: player1,
         opp: {
-          cards: player2.hand.length,
+          cards: player2.hand,
           captured: player2.captured,
           points: player2.points,
         },
@@ -21,7 +21,7 @@ module.exports = {
       curr,
       player: player2,
       opp: {
-        cards: player1.hand.length,
+        cards: player1.hand,
         captured: player1.captured,
         points: player1.points,
       },
