@@ -2,6 +2,8 @@ import React from 'react';
 import styled from 'styled-components';
 import Card from './Card.jsx';
 
+import { fromField } from '../gameLogic';
+
 const CenterDiv = styled.div`
   height: 30%;
   width: 90%;
@@ -31,17 +33,18 @@ const DeckDiv = styled.div`
 
 function Field(props) {
   const { field } = props;
+
   return (
     <CenterDiv>
       <FieldDiv>
-          {field.map((cardId) => (
-          <Card
-            key={cardId}
-            cardIdProp={cardId}
-            flipProp={true}
-            hand={false}
-          />
-          ))}
+        {field.map((cardId) => (
+            <Card
+              key={cardId}
+              cardIdProp={cardId}
+              flipProp={true}
+              hand={false}
+            />
+        ))}
       </FieldDiv>
       <DeckDiv>
         <Card

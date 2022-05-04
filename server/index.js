@@ -17,6 +17,7 @@ app.use('*', (req, res, next) => {
 app.use(express.static(path.resolve(__dirname, '../client/dist')));
 
 app.get('/new', (req, res) => {
+  console.log('generating new game!')
   // generate random deck
   const newDeck = shuffleDeck();
   // send deck to dbms for new full game
@@ -36,7 +37,10 @@ app.get('/new', (req, res) => {
     deck: newDeck,
   });
   newGame.save()
-    .then((response) => res.send(getPlayerStates(1, response)));
+    .then((response) => {
+      console.log(`new game ID ${response['_id']} created!`)
+      res.send(getPlayerStates(1, response));
+    });
 });
 
 app.get('/:gameId/:playerId', (req, res) => {
