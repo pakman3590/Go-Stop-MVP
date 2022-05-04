@@ -2,7 +2,10 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import regeneratorRuntime from 'regenerator-runtime';
 
-import fetchState from '../requests';
+import { newGame, fetchState } from '../requests';
+import {
+  updateHand, updateField, updateCapture, dealCards, playCard,
+} from '../gameMechanics';
 
 import Capture from './Capture.jsx';
 import OppHand from './OppHand.jsx';
@@ -22,157 +25,349 @@ const Board = styled.main`
   justify-content: center;
 `;
 
-// Will receive both player's scores and card layouts with every card play
-function App() {
-  const [active, setActive] = useState(false);
-  const [timer, setTimer] = useState(false);
-  const [gameId, setGameId] = useState(56);
-  const [playerId, setPlayerId] = useState(1);
-  const [playerHand, setPlayerHand] = useState(null);
-  const [playerCapture, setPlayerCapture] = useState(null);
-  const [oppHand, setOppHand] = useState(null);
-  const [oppCapture, setOppCapture] = useState(null);
-  const [fieldState, setFieldState] = useState(null);
-  const [deck, setDeck] = useState(null);
+const wait = async (time) => (
+  new Promise((resolve) => { setTimeout(resolve, time); })
+);
 
-  const gameRefresh = () => {
-    console.log('refreshing game')
-    setTimeout(() => {
-      fetchState(gameId, playerId)
-        .then((response) => {
-          const {
-            curr, player, opp, field, newDeck,
-          } = response.data;
-          console.log(curr, playerId);
-          if (curr !== playerId) {
-            setPlayerHand(player.hand);
-            setPlayerCapture(player.captured);
-            setOppHand(opp.cards);
-            setOppCapture(opp.captured);
-            setFieldState(field);
-            setDeck(newDeck);
-          }
-        }).then(() => {
-          gameRefresh();
-        })
-        .catch((err) => console.log(err));
-    }, 5000);
-  };
+class App extends React.Component {
+  constructor(props) {
+    super(props);
 
-  const gameLoad = () => {
-    console.log('loading game')
-    fetchState(gameId, playerId)
-      .then((response) => {
-        const {
-          player, opp, field, newDeck,
-        } = response.data;
-        setPlayerHand(player.hand);
-        setPlayerCapture(player.captured);
-        setOppHand(opp.cards);
-        setOppCapture(opp.captured);
-        setFieldState(field);
-        setDeck(newDeck);
-      }).then(() => {
-        setActive(true);
-        gameRefresh();
-      })
-      .catch((err) => console.log(err));
-  };
+    this.state = {
+      active: null,
+      timer: false,
+      gameId: null,
+      playerId: null,
+      playerHand: [],
+      playerCapture: [],
+      oppHand: [],
+      oppCapture: [],
+      field: {},
+      deck: null,
+      last: 0,
+    };
 
-  useEffect(gameLoad, []);
-  useEffect(gameRefresh, [timer]);
-
-  const handleCardClick = async (cardId) => {
-    console.log(`clicked ${cardId}`);
-    const index = playerHand.indexOf(cardId);
-    const newHand = playerHand.slice();
-    newHand.splice(index, 1);
-    setPlayerHand(newHand);
-    setFieldState([...fieldState, cardId]);
-    const cardMonth = cardId.slice(0, 3);
-    await setTimeout(() => {}, 500);
-    fieldState.forEach((fieldCardId, fieldIndex) => {
-      if (cardMonth === fieldCardId.slice(0, 3)) {
-        const newField = fieldState.slice();
-        newField.splice(fieldIndex, 1);
-        setFieldState(newField);
-        setPlayerCapture([...playerCapture, cardId, fieldCardId]);
-      }
-    });
-    dumbAi();
-  };
-
-  const handleIdChange = (e) => {
-    setGameId(e.target.value);
-  };
-
-  const handlePlayerChange = (e) => {
-    setPlayerId(e.target.value);
-  };
-
-  // REMOVE WHEN MULTIPLAYER IMPLEMENTED
-
-  const handleOpp = async (cardId) => {
-    const index = oppHand.indexOf(cardId);
-    const newHand = oppHand.slice();
-    newHand.splice(index, 1);
-    setOppHand(newHand);
-    setFieldState([...fieldState, cardId]);
-    const cardMonth = cardId.slice(0, 3);
-    await setTimeout(() => {}, 500);
-    fieldState.forEach((fieldCardId, fieldIndex) => {
-      if (cardMonth === fieldCardId.slice(0, 3)) {
-        const newField = fieldState.slice();
-        newField.splice(fieldIndex, 1);
-        setFieldState(newField);
-        setOppCapture([...oppCapture, cardId, fieldCardId]);
-      }
-    });
-  };
-
-  const dumbAi = async () => {
-    console.log('Opponent is thinking');
-    const randomCard = oppHand[Math.floor(Math.random() * (oppHand.length - 1))];
-    await setTimeout(() => {
-      console.log(`opp plays ${randomCard}`);
-      handleOpp(randomCard);
-    }, 4000);
-  };
-
-  // REMOVE WHEN MULTIPLAYER IMPLEMENTED
-
-  if (active) {
-    return (
-      <Board>
-        <Capture cards={oppCapture} />
-        <OppHand hand={Array(oppHand).fill(0)} />
-        <Field field={fieldState} />
-        <PlayerHand
-          hand={playerHand}
-          handleCardClick={handleCardClick}
-        />
-        <Capture cards={playerCapture} />
-      </Board>
-    );
+    this.startNewGame = this.startNewGame.bind(this);
+    this.handleCardClick = this.handleCardClick.bind(this);
+    this.dumbAi = this.dumbAi.bind(this);
   }
 
-  return (
-    <Board>
-      <form>
-        <input
-          type='text'
-          value={gameId}
-          onChange={handleIdChange}
-        />
-        <input
-          type='text'
-          value={playerId}
-          onChange={handlePlayerChange}
-        />
-        <button type='submit'>GAM</button>
-      </form>
-    </Board>
-  );
+  componentDidMount() {
+    this.startNewGame();
+  }
+
+  startNewGame() {
+    newGame()
+      .then((response) => {
+        const { gameId, deck } = response.data;
+        this.setState({
+          gameId,
+          playerId: 1,
+          deck,
+        }, () => {
+          const [p1Hand, p2Hand, field, newDeck] = dealCards(deck);
+          this.setState({
+            playerHand: p1Hand,
+            oppHand: p2Hand,
+            field,
+            deck: newDeck,
+            active: true,
+          });
+        });
+      });
+  }
+
+  // handleOpp(cardId) {
+  //   const { oppHand, field, oppCapture } = this.state;
+  //   const index = oppHand.indexOf(cardId);
+  //   const newHand = oppHand.slice();
+  //   newHand.splice(index, 1);
+  //   this.setState({
+  //     oppHand: newHand,
+  //   }, async () => {
+  //     const cardMonth = cardId.slice(0, 3);
+  //     await setTimeout(() => {}, 500);
+  //     field.forEach((fieldCardId, fieldIndex) => {
+  //       if (cardMonth === fieldCardId.slice(0, 3)) {
+  //         const newField = field.slice();
+  //         newField.splice(fieldIndex, 1);
+  //         this.setState({
+  //           field: newField,
+  //           oppCapture: [...oppCapture, cardId, fieldCardId],
+  //         });
+  //       } else {
+  //         this.setState({
+  //           field: [...field, cardId],
+  //         });
+  //       }
+  //     });
+  //   });
+  // }
+
+  async dumbAi() {
+    const { oppHand, last } = this.state;
+    console.log('Opponent is thinking');
+    const randomCard = oppHand[Math.floor(Math.random() * (oppHand.length - 1))];
+    this.setState({
+      last: 1,
+    });
+    await setTimeout(() => {
+      console.log(`opp plays ${randomCard}`);
+      this.handleCardClick(randomCard, 2);
+    }, 4000);
+  }
+
+  handleCardClick(cardId, playerId) {
+    const {
+      playerHand, playerCapture, oppHand, oppCapture, field, deck, last,
+    } = this.state;
+
+    let current = {
+      hand: playerHand,
+      handN: 'playerHand',
+      capture: playerCapture,
+      captureN: 'playerCapture',
+    };
+    if (playerId === 2) {
+      current = {
+        hand: oppHand,
+        handN: 'oppHand',
+        capture: oppCapture,
+        captureN: 'oppCapture',
+      };
+    }
+    console.log(`clicked ${cardId}`);
+
+    const handUpdate = cardId;
+    const {
+      fMatch, pMatch, addField, specialEvent, newDeck,
+    } = playCard(cardId, field, deck);
+
+    const newHand = updateHand(current.hand, handUpdate);
+    const newCapture = updateCapture(current.capture, [...fMatch, ...pMatch]);
+    const newField = updateField(field, fMatch, addField);
+
+    this.setState({
+      [current.handN]: newHand,
+      [current.captureN]: newCapture,
+      field: newField,
+      deck: newDeck,
+    });
+    if (last !== 2) {
+      this.dumbAi();
+    }
+  }
+
+  render() {
+    const {
+      active, playerHand, playerCapture, oppHand, oppCapture, field,
+    } = this.state;
+    console.log(this.state);
+
+    const renderGame = () => {
+      if (active) {
+        return (
+          <Board>
+            <Capture cards={oppCapture} />
+            <OppHand hand={oppHand} />
+            <Field field={field} />
+            <PlayerHand
+              hand={playerHand}
+              handleCardClick={this.handleCardClick}
+            />
+            <Capture cards={playerCapture} />
+          </Board>
+        );
+      }
+      return (
+        <Board>Loading...</Board>
+      );
+    };
+
+    return (
+      renderGame()
+    );
+  }
 }
 
 export default App;
+
+
+// Will receive both player's scores and card layouts with every card play
+// function App() {
+//   const [active, setActive] = useState(null);
+//   const [timer, setTimer] = useState(false);
+//   const [gameId, setGameId] = useState(null);
+//   const [playerId, setPlayerId] = useState(null);
+//   const [playerHand, setPlayerHand] = useState([]);
+//   const [playerCapture, setPlayerCapture] = useState([]);
+//   const [oppHand, setOppHand] = useState([]);
+//   const [oppCapture, setOppCapture] = useState([]);
+//   const [fieldState, setFieldState] = useState([]);
+//   const [deck, setDeck] = useState(null);
+
+//   const startNewGame = () => {
+//     newGame()
+//       .then((response) => {
+//         setGameId(response.data.gameId);
+//         setPlayerId(1);
+//         setDeck(response.data.deck);
+//         setActive(true);
+//       })
+//       .then(() => {
+//         setInterval(() => console.log(deck), 500);
+//         // const { p1Hand, p2Hand, newDeck } = dealCards(deck);
+//         // await setTimeout(() => setPlayerHand(p1Hand), 500);
+//         // await setTimeout(() => setOppHand(p2Hand), 500);
+//         // setDeck(newDeck);
+//       })
+//       .catch((err) => console.log(err));
+//   };
+
+//   const gameRefresh = () => {
+//     console.log('refreshing game')
+//     setTimeout(() => {
+//       fetchState(gameId, playerId)
+//         .then((response) => {
+//           const {
+//             curr, player, opp, field, newDeck,
+//           } = response.data;
+//           console.log(curr, playerId);
+//           if (curr !== playerId) {
+//             setPlayerHand(player.hand);
+//             setPlayerCapture(player.captured);
+//             setOppHand(opp.hand);
+//             setOppCapture(opp.captured);
+//             setFieldState(field);
+//             setDeck(newDeck);
+//           }
+//         }).then(() => {
+//           gameRefresh();
+//         })
+//         .catch((err) => console.log(err));
+//     }, 5000);
+//   };
+
+//   // const gameLoad = () => {
+//   //   console.log('loading game');
+//   //   fetchState(gameId, playerId)
+//   //     .then((response) => {
+//   //       const {
+//   //         player, opp, field, newDeck,
+//   //       } = response.data;
+//   //       setPlayerHand(player.hand);
+//   //       setPlayerCapture(player.captured);
+//   //       setOppHand(opp.hand);
+//   //       setOppCapture(opp.captured);
+//   //       setFieldState(field);
+//   //       setDeck(newDeck);
+//   //     }).then(() => {
+//   //       setActive(true);
+//   //       gameRefresh();
+//   //     })
+//   //     .catch((err) => console.log(err));
+//   // };
+
+//   // useEffect(gameLoad, []);
+//   // useEffect(() => {
+//   //   if (gameId && playerId) {
+//   //     gameRefresh();
+//   //   }
+//   // }, [timer, gameId, playerId]);
+
+//   const handleCardClick = async (cardId) => {
+//     console.log(`clicked ${cardId}`);
+//     const index = playerHand.indexOf(cardId);
+//     const newHand = playerHand.slice();
+//     newHand.splice(index, 1);
+//     setPlayerHand(newHand);
+//     setFieldState([...fieldState, cardId]);
+//     const cardMonth = cardId.slice(0, 3);
+//     await setTimeout(() => {}, 500);
+//     fieldState.forEach((fieldCardId, fieldIndex) => {
+//       if (cardMonth === fieldCardId.slice(0, 3)) {
+//         const newField = fieldState.slice();
+//         newField.splice(fieldIndex, 1);
+//         setFieldState(newField);
+//         setPlayerCapture([...playerCapture, cardId, fieldCardId]);
+//       }
+//     });
+//     dumbAi();
+//   };
+
+//   const handleIdChange = (e) => {
+//     setGameId(e.target.value);
+//   };
+
+//   const handlePlayerChange = (e) => {
+//     setPlayerId(e.target.value);
+//   };
+
+//   // REMOVE WHEN MULTIPLAYER IMPLEMENTED
+
+// const handleOpp = async (cardId) => {
+//   const index = oppHand.indexOf(cardId);
+//   const newHand = oppHand.slice();
+//   newHand.splice(index, 1);
+//   setOppHand(newHand);
+//   setFieldState([...fieldState, cardId]);
+//   const cardMonth = cardId.slice(0, 3);
+//   await setTimeout(() => {}, 500);
+//   fieldState.forEach((fieldCardId, fieldIndex) => {
+//     if (cardMonth === fieldCardId.slice(0, 3)) {
+//       const newField = fieldState.slice();
+//       newField.splice(fieldIndex, 1);
+//       setFieldState(newField);
+//       setOppCapture([...oppCapture, cardId, fieldCardId]);
+//     }
+//   });
+// };
+
+// const dumbAi = async () => {
+//   console.log('Opponent is thinking');
+//   const randomCard = oppHand[Math.floor(Math.random() * (oppHand.length - 1))];
+//   await setTimeout(() => {
+//     console.log(`opp plays ${randomCard}`);
+//     handleOpp(randomCard);
+//   }, 4000);
+// };
+
+//   // REMOVE WHEN MULTIPLAYER IMPLEMENTED
+
+//   if (active) {
+//     return (
+// <Board>
+//   <Capture cards={oppCapture} />
+//   <OppHand hand={oppHand} />
+//   <Field field={fieldState} />
+//   <PlayerHand
+//     hand={playerHand}
+//     handleCardClick={handleCardClick}
+//   />
+//   <Capture cards={playerCapture} />
+// </Board>
+//     );
+//   }
+
+//   return (
+//     <Board>
+//       <button onClick={() => {
+//         startNewGame();
+//       }
+//       }>NEW GAM</button>
+//       {/* <form>
+//         <input
+//           type='text'
+//           value={gameId}
+//           onChange={handleIdChange}
+//         />
+//         <input
+//           type='text'
+//           value={playerId}
+//           onChange={handlePlayerChange}
+//         />
+//         <button type='submit'>GAM</button>
+//       </form> */}
+//     </Board>
+//   );
+// }
