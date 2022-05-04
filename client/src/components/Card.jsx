@@ -14,11 +14,10 @@ const CardDiv = styled.div`
 `;
 
 function Card(props) {
-  const { cardIdProp, cardMonthProp, flipProp, hand } = props;
+  const { cardIdProp, flipProp, hand } = props;
 
   const [flipped, setFlipped] = useState(flipProp);
   const [inHand, setInHand] = useState(hand);
-  const [cardMonth, setCardMonth] = useState(cardMonthProp);
 
   if (flipped) {
     return (

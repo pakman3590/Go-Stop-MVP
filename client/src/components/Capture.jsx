@@ -7,6 +7,9 @@ const CaptureDiv = styled.div`
   height: 25%;
   width: 90%;
 
+  display: flex;
+  flex-flow: row wrap;
+
   border: 2px solid #000000;
 `;
 
@@ -14,11 +17,10 @@ function Capture(props) {
   const { cards } = props;
   return (
     <CaptureDiv>
-      {cards.map((card) => (
+      {cards.map((cardId) => (
         <Card
-          key={card.cardId}
-          cardIdProp={card.cardId}
-          cardMonthProp={card.cardMonth}
+          key={cardId}
+          cardIdProp={cardId}
           flipProp={true}
         />
       ))}

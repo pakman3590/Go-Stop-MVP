@@ -14,11 +14,11 @@ const CardDiv = styled.div`
 `;
 
 function HandCard(props) {
-  const { cardId, cardMonth, handleCardClick } = props;
+  const { cardId, handleCardClick } = props;
 
   return (
-    <CardDiv>
-      <img src={`https://www.pagat.com/images/hwatu/${cardId}.gif`} onClick={() => handleCardClick(cardId, cardMonth)} />
+    <CardDiv onClick={() => handleCardClick(cardId)} >
+      <img src={`https://www.pagat.com/images/hwatu/${cardId}.gif`} />
     </CardDiv>
   );
 }
