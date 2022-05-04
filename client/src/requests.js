@@ -10,9 +10,31 @@ const fetchState = (gameId, playerId) => {
   return axios.get(`/${gameId}/${playerId}`);
 };
 
-// const playCard = (gameId, playerId, cardId) => {
-//   console.log(`playing card ${cardId}`);
-//   return axios.put(`/${gameId}/${playerId}/play`, { cardId });
-// };
+const updateGame = (state) => {
+  console.log('updating!');
+  const {
+    gameId, playerHand, playerCapture, oppHand, oppCapture, field, deck, turn,
+  } = state;
+  const data = [
+    gameId,
+    {
+      player1: {
+        hand: playerHand,
+        captured: playerCapture,
+        // NEEDS POINTS
+      },
+      player2: {
+        hand: oppHand,
+        captured: oppCapture,
+        // NEEDS POINTS
+      },
+      field,
+      deck,
+      turn,
+    },
+  ];
 
-export { newGame, fetchState };
+  return axios.put(`/${gameId}`, data);
+};
+
+export { newGame, fetchState, updateGame };

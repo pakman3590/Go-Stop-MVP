@@ -17,12 +17,11 @@ app.use('*', (req, res, next) => {
 app.use(express.static(path.resolve(__dirname, '../client/dist')));
 
 app.get('/new', (req, res) => {
-  console.log('generating new game!')
+  console.log('generating new game!');
   // generate random deck
   const newDeck = shuffleDeck();
   // send deck to dbms for new full game
   const newGame = new Game({
-    curr: 1,
     player1: {
       hand: [],
       captured: [],
@@ -35,10 +34,12 @@ app.get('/new', (req, res) => {
     },
     field: [],
     deck: newDeck,
+    turn: 1,
   });
   newGame.save()
     .then((response) => {
-      console.log(`new game ID ${response['_id']} created!`)
+      // eslint-disable-next-line dot-notation
+      console.log(`new game ID ${response['_id']} created!`);
       res.send(getPlayerStates(1, response));
     });
 });
@@ -52,6 +53,20 @@ app.get('/:gameId/:playerId', (req, res) => {
       res.sendStatus(404);
     } else {
       res.send(getPlayerStates(playerId, results));
+    }
+  });
+});
+
+app.put('/:gameId', (req, res) => {
+  const { gameId } = req.params;
+  const { turn } = req.data;
+  console.log(`Updating game ${gameId} turn ${turn}`);
+  Game.findOneAndUpdate({ _id: gameId }, req.data, (err) => {
+    if (err) {
+      console.log(err);
+      res.sendStatus(404);
+    } else {
+      res.sendStatus(200);
     }
   });
 });

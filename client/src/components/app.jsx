@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import styled from 'styled-components';
+// eslint-disable-next-line no-unused-vars
 import regeneratorRuntime from 'regenerator-runtime';
 
-import { newGame, fetchState } from '../requests';
+import { newGame, fetchState, updateGame } from '../requests';
 import {
   updateHand, updateField, updateCapture, dealCards, playCard,
 } from '../gameMechanics';
@@ -25,9 +26,9 @@ const Board = styled.main`
   justify-content: center;
 `;
 
-const wait = async (time) => (
-  new Promise((resolve) => { setTimeout(resolve, time); })
-);
+// const wait = async (time) => (
+//   new Promise((resolve) => { setTimeout(resolve, time); })
+// );
 
 class App extends React.Component {
   constructor(props) {
@@ -42,9 +43,9 @@ class App extends React.Component {
       playerCapture: [],
       oppHand: [],
       oppCapture: [],
-      field: {},
+      field: [],
       deck: null,
-      last: 0,
+      turn: 1,
     };
 
     this.startNewGame = this.startNewGame.bind(this);
@@ -77,40 +78,13 @@ class App extends React.Component {
       });
   }
 
-  // handleOpp(cardId) {
-  //   const { oppHand, field, oppCapture } = this.state;
-  //   const index = oppHand.indexOf(cardId);
-  //   const newHand = oppHand.slice();
-  //   newHand.splice(index, 1);
-  //   this.setState({
-  //     oppHand: newHand,
-  //   }, async () => {
-  //     const cardMonth = cardId.slice(0, 3);
-  //     await setTimeout(() => {}, 500);
-  //     field.forEach((fieldCardId, fieldIndex) => {
-  //       if (cardMonth === fieldCardId.slice(0, 3)) {
-  //         const newField = field.slice();
-  //         newField.splice(fieldIndex, 1);
-  //         this.setState({
-  //           field: newField,
-  //           oppCapture: [...oppCapture, cardId, fieldCardId],
-  //         });
-  //       } else {
-  //         this.setState({
-  //           field: [...field, cardId],
-  //         });
-  //       }
-  //     });
-  //   });
-  // }
-
   async dumbAi() {
-    const { oppHand, last } = this.state;
+    const { oppHand } = this.state;
     console.log('Opponent is thinking');
     const randomCard = oppHand[Math.floor(Math.random() * (oppHand.length - 1))];
-    this.setState({
-      last: 1,
-    });
+    // this.setState({
+    //   last: 1,
+    // });
     await setTimeout(() => {
       console.log(`opp plays ${randomCard}`);
       this.handleCardClick(randomCard, 2);
@@ -119,7 +93,7 @@ class App extends React.Component {
 
   handleCardClick(cardId, playerId) {
     const {
-      playerHand, playerCapture, oppHand, oppCapture, field, deck, last,
+      playerHand, playerCapture, oppHand, oppCapture, field, deck, turn,
     } = this.state;
 
     let current = {
@@ -152,10 +126,12 @@ class App extends React.Component {
       [current.captureN]: newCapture,
       field: newField,
       deck: newDeck,
+      turn: turn + 1,
+    }, () => {
+      updateGame(this.state)
+        .then(() => console.log('Game Updated!'))
+        .catch((err) => console.log(err));
     });
-    if (last !== 2) {
-      this.dumbAi();
-    }
   }
 
   render() {
@@ -191,7 +167,6 @@ class App extends React.Component {
 }
 
 export default App;
-
 
 // Will receive both player's scores and card layouts with every card play
 // function App() {
