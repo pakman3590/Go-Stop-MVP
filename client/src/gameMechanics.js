@@ -1,5 +1,5 @@
 /* eslint-disable prefer-destructuring */
-const { logicChain } = require('./gameLogic');
+import { logicChain } from './gameLogic';
 
 const updateHand = (hand, handUpdate) => {
   const newHand = hand.slice();
