@@ -29,8 +29,8 @@ const dealCards = (deck) => {
   const p1Hand = newDeck.splice(0, 5);
   const p2Hand = newDeck.splice(0, 5);
   const field = newDeck.splice(0, 4);
-  p1Hand.push(...newDeck.splice(0, 4));
-  p2Hand.push(...newDeck.splice(0, 4));
+  p1Hand.push(...newDeck.splice(0, 5));
+  p2Hand.push(...newDeck.splice(0, 5));
   field.push(...newDeck.splice(0, 4));
   return [p1Hand, p2Hand, field, newDeck];
 };
