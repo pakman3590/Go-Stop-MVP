@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 
 import Card from './Card.jsx';
-import { cardScore } from '../scoring';
+// import { cardScore } from '../scoring';
 
 const ContainerDiv = styled.div`
   height: 25%;
@@ -28,12 +28,10 @@ const Score = styled.div`
   display: flex;
   flex-direction: column:
 
-  justify-content: space-evenly;
-  align-items: center;
 `;
 
 function Capture(props) {
-  const { cards, turn } = props;
+  const { cards, points, turn } = props;
 
   const turns = () => {
     if (turn % 2 !== 0) {
@@ -41,6 +39,13 @@ function Capture(props) {
     }
     return <span>{'Opponent\'s Turn!'}</span>;
   };
+
+  // const score = () => {
+  //   const newScore = cardScore(cards)[0];
+  //   if (newScore >= 7) {
+  //     alert ()
+  //   }
+  // }
 
   return (
     <ContainerDiv>
@@ -55,7 +60,7 @@ function Capture(props) {
       </CaptureDiv>
       <Score>
         <h4>Score:</h4>
-        <span>{cardScore(cards)[0]}</span>
+        <span>{points}</span>
         {turns()}
       </Score>
     </ContainerDiv>

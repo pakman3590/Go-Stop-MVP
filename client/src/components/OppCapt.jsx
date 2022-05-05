@@ -33,7 +33,7 @@ const Score = styled.div`
 `;
 
 function OppCapt(props) {
-  const { cards } = props;
+  const { cards, points } = props;
 
   return (
     <ContainerDiv>
@@ -48,7 +48,7 @@ function OppCapt(props) {
       </CaptureDiv>
       <Score>
         <h4>Score:</h4>
-        <span>{cardScore(cards)[0]}</span>
+        <span>{points}</span>
         <span> </span>
       </Score>
     </ContainerDiv>

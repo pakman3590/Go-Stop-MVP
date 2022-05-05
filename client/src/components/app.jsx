@@ -7,6 +7,7 @@ import { newGame, fetchState, updateGame } from '../requests';
 import {
   updateHand, updateField, updateCapture, dealCards, playCard,
 } from '../gameMechanics';
+import { cardScore } from '../scoring';
 
 import PlayerCapt from './PlayerCapt.jsx';
 import OppCapt from './OppCapt.jsx';
@@ -91,7 +92,7 @@ class App extends React.Component {
 
   handleCardClick(cardId, playerId) {
     const {
-      playerHand, playerCapture, oppHand, oppCapture, field, deck, turn,
+      playerHand, playerCapture, playerPoints, oppHand, oppCapture, oppPoints, field, deck, turn,
     } = this.state;
 
     let current = {
@@ -99,6 +100,8 @@ class App extends React.Component {
       handN: 'playerHand',
       capture: playerCapture,
       captureN: 'playerCapture',
+      points: playerPoints,
+      pointsN: 'playerPoints',
     };
     if (playerId === 2) {
       current = {
@@ -106,6 +109,8 @@ class App extends React.Component {
         handN: 'oppHand',
         capture: oppCapture,
         captureN: 'oppCapture',
+        points: oppPoints,
+        pointsN: 'oppPoints',
       };
     }
     console.log(`clicked ${cardId}`);
@@ -118,10 +123,12 @@ class App extends React.Component {
     const newHand = updateHand(current.hand, handUpdate);
     const newCapture = updateCapture(current.capture, [...fMatch, ...pMatch]);
     const newField = updateField(field, fMatch, addField);
+    const newPoints = cardScore(newCapture)[0];
 
     this.setState({
       [current.handN]: newHand,
       [current.captureN]: newCapture,
+      [current.pointsN]: newPoints,
       field: newField,
       deck: newDeck,
       turn: turn + 1,
@@ -135,14 +142,20 @@ class App extends React.Component {
 
   render() {
     const {
-      active, playerId, playerHand, playerCapture, oppHand, oppCapture, field, turn,
+      active,
+      playerId, playerHand, playerCapture, playerPoints,
+      oppHand, oppCapture, oppPoints,
+      field, turn,
     } = this.state;
 
     const renderGame = () => {
       if (active) {
         return (
           <Board>
-            <OppCapt cards={oppCapture} />
+            <OppCapt
+              cards={oppCapture}
+              points={oppPoints}
+            />
             <OppHand hand={oppHand} />
             <Field field={field} />
             <PlayerHand
@@ -152,6 +165,7 @@ class App extends React.Component {
             />
             <PlayerCapt
               playerId={playerId}
+              points={playerPoints}
               cards={playerCapture}
               turn={turn}
             />
@@ -170,182 +184,3 @@ class App extends React.Component {
 }
 
 export default App;
-
-// Will receive both player's scores and card layouts with every card play
-// function App() {
-//   const [active, setActive] = useState(null);
-//   const [timer, setTimer] = useState(false);
-//   const [gameId, setGameId] = useState(null);
-//   const [playerId, setPlayerId] = useState(null);
-//   const [playerHand, setPlayerHand] = useState([]);
-//   const [playerCapture, setPlayerCapture] = useState([]);
-//   const [oppHand, setOppHand] = useState([]);
-//   const [oppCapture, setOppCapture] = useState([]);
-//   const [fieldState, setFieldState] = useState([]);
-//   const [deck, setDeck] = useState(null);
-
-//   const startNewGame = () => {
-//     newGame()
-//       .then((response) => {
-//         setGameId(response.data.gameId);
-//         setPlayerId(1);
-//         setDeck(response.data.deck);
-//         setActive(true);
-//       })
-//       .then(() => {
-//         setInterval(() => console.log(deck), 500);
-//         // const { p1Hand, p2Hand, newDeck } = dealCards(deck);
-//         // await setTimeout(() => setPlayerHand(p1Hand), 500);
-//         // await setTimeout(() => setOppHand(p2Hand), 500);
-//         // setDeck(newDeck);
-//       })
-//       .catch((err) => console.log(err));
-//   };
-
-//   const gameRefresh = () => {
-//     console.log('refreshing game')
-//     setTimeout(() => {
-//       fetchState(gameId, playerId)
-//         .then((response) => {
-//           const {
-//             curr, player, opp, field, newDeck,
-//           } = response.data;
-//           console.log(curr, playerId);
-//           if (curr !== playerId) {
-//             setPlayerHand(player.hand);
-//             setPlayerCapture(player.captured);
-//             setOppHand(opp.hand);
-//             setOppCapture(opp.captured);
-//             setFieldState(field);
-//             setDeck(newDeck);
-//           }
-//         }).then(() => {
-//           gameRefresh();
-//         })
-//         .catch((err) => console.log(err));
-//     }, 5000);
-//   };
-
-//   // const gameLoad = () => {
-//   //   console.log('loading game');
-//   //   fetchState(gameId, playerId)
-//   //     .then((response) => {
-//   //       const {
-//   //         player, opp, field, newDeck,
-//   //       } = response.data;
-//   //       setPlayerHand(player.hand);
-//   //       setPlayerCapture(player.captured);
-//   //       setOppHand(opp.hand);
-//   //       setOppCapture(opp.captured);
-//   //       setFieldState(field);
-//   //       setDeck(newDeck);
-//   //     }).then(() => {
-//   //       setActive(true);
-//   //       gameRefresh();
-//   //     })
-//   //     .catch((err) => console.log(err));
-//   // };
-
-//   // useEffect(gameLoad, []);
-//   // useEffect(() => {
-//   //   if (gameId && playerId) {
-//   //     gameRefresh();
-//   //   }
-//   // }, [timer, gameId, playerId]);
-
-//   const handleCardClick = async (cardId) => {
-//     console.log(`clicked ${cardId}`);
-//     const index = playerHand.indexOf(cardId);
-//     const newHand = playerHand.slice();
-//     newHand.splice(index, 1);
-//     setPlayerHand(newHand);
-//     setFieldState([...fieldState, cardId]);
-//     const cardMonth = cardId.slice(0, 3);
-//     await setTimeout(() => {}, 500);
-//     fieldState.forEach((fieldCardId, fieldIndex) => {
-//       if (cardMonth === fieldCardId.slice(0, 3)) {
-//         const newField = fieldState.slice();
-//         newField.splice(fieldIndex, 1);
-//         setFieldState(newField);
-//         setPlayerCapture([...playerCapture, cardId, fieldCardId]);
-//       }
-//     });
-//     dumbAi();
-//   };
-
-//   const handleIdChange = (e) => {
-//     setGameId(e.target.value);
-//   };
-
-//   const handlePlayerChange = (e) => {
-//     setPlayerId(e.target.value);
-//   };
-
-//   // REMOVE WHEN MULTIPLAYER IMPLEMENTED
-
-// const handleOpp = async (cardId) => {
-//   const index = oppHand.indexOf(cardId);
-//   const newHand = oppHand.slice();
-//   newHand.splice(index, 1);
-//   setOppHand(newHand);
-//   setFieldState([...fieldState, cardId]);
-//   const cardMonth = cardId.slice(0, 3);
-//   await setTimeout(() => {}, 500);
-//   fieldState.forEach((fieldCardId, fieldIndex) => {
-//     if (cardMonth === fieldCardId.slice(0, 3)) {
-//       const newField = fieldState.slice();
-//       newField.splice(fieldIndex, 1);
-//       setFieldState(newField);
-//       setOppCapture([...oppCapture, cardId, fieldCardId]);
-//     }
-//   });
-// };
-
-// const dumbAi = async () => {
-//   console.log('Opponent is thinking');
-//   const randomCard = oppHand[Math.floor(Math.random() * (oppHand.length - 1))];
-//   await setTimeout(() => {
-//     console.log(`opp plays ${randomCard}`);
-//     handleOpp(randomCard);
-//   }, 4000);
-// };
-
-//   // REMOVE WHEN MULTIPLAYER IMPLEMENTED
-
-//   if (active) {
-//     return (
-// <Board>
-//   <Capture cards={oppCapture} />
-//   <OppHand hand={oppHand} />
-//   <Field field={fieldState} />
-//   <PlayerHand
-//     hand={playerHand}
-//     handleCardClick={handleCardClick}
-//   />
-//   <Capture cards={playerCapture} />
-// </Board>
-//     );
-//   }
-
-//   return (
-//     <Board>
-//       <button onClick={() => {
-//         startNewGame();
-//       }
-//       }>NEW GAM</button>
-//       {/* <form>
-//         <input
-//           type='text'
-//           value={gameId}
-//           onChange={handleIdChange}
-//         />
-//         <input
-//           type='text'
-//           value={playerId}
-//           onChange={handlePlayerChange}
-//         />
-//         <button type='submit'>GAM</button>
-//       </form> */}
-//     </Board>
-//   );
-// }
