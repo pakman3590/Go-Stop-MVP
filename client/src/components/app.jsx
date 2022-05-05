@@ -76,6 +76,8 @@ class App extends React.Component {
           playerId: 1,
           deck,
           winner: null,
+          playerCapture: [],
+          oppCapture: [],
         }, () => {
           const [p1Hand, p2Hand, field, newDeck] = dealCards(deck);
           this.setState({
