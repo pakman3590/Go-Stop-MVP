@@ -24,15 +24,22 @@ const CaptureDiv = styled.div`
 const Score = styled.div`
   height 100%;
   width: 15%;
+
+  display: flex;
+  flex-direction: column:
+
+  justify-content: space-evenly;
+  align-items: center;
 `;
 
-function PlayerCapt(props) {
+function Capture(props) {
   const { cards, turn } = props;
+
   const turns = () => {
     if (turn % 2 !== 0) {
       return <span>Your Turn!</span>;
     }
-    return <span>Opponent Turn!</span>;
+    return <span>{'Opponent\'s Turn!'}</span>;
   };
 
   return (
@@ -55,4 +62,4 @@ function PlayerCapt(props) {
   );
 }
 
-export default PlayerCapt;
+export default Capture;

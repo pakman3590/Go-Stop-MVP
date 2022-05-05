@@ -63,7 +63,6 @@ const playCard = (playedCardId, field, deck) => {
       break;
     }
   }
-  console.log(update);
   return update;
 };
 

@@ -27,10 +27,6 @@ const Board = styled.main`
   justify-content: center;
 `;
 
-// const wait = async (time) => (
-//   new Promise((resolve) => { setTimeout(resolve, time); })
-// );
-
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -82,16 +78,15 @@ class App extends React.Component {
   }
 
   async dumbAi() {
-    const { oppHand } = this.state;
-    console.log('Opponent is thinking');
-    const randomCard = oppHand[Math.floor(Math.random() * (oppHand.length - 1))];
-    // this.setState({
-    //   last: 1,
-    // });
-    await setTimeout(() => {
-      console.log(`opp plays ${randomCard}`);
-      this.handleCardClick(randomCard, 2);
-    }, 4000);
+    const { oppHand, turn } = this.state;
+    if (turn % 2 === 0) {
+      console.log('Opponent is thinking');
+      const randomCard = oppHand[Math.floor(Math.random() * (oppHand.length - 1))];
+      await setTimeout(() => {
+        console.log(`opp plays ${randomCard}`);
+        this.handleCardClick(randomCard, 2);
+      }, 4000);
+    }
   }
 
   handleCardClick(cardId, playerId) {
@@ -133,6 +128,7 @@ class App extends React.Component {
     }, () => {
       updateGame(this.state)
         .then(() => console.log('Game Updated!'))
+        .then(() => this.dumbAi())
         .catch((err) => console.log(err));
     });
   }
