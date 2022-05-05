@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { sortCapture } from '../gameMechanics';
 
 import Card from './Card.jsx';
 
@@ -8,8 +9,6 @@ const ContainerDiv = styled.div`
   width: 90%;
 
   display: flex;
-
-  border: 2px solid #000000;
 `;
 
 const CaptureDiv = styled.div`
@@ -20,12 +19,21 @@ const CaptureDiv = styled.div`
   flex-flow: row wrap;
 `;
 
+const CardSection = styled.div`
+  width: max-content;
+  padding-right: 70px;
+
+  display: grid;
+  grid-template-columns: repeat(5, 25px);
+  grid-template-rows: repeat(3, 60px);
+`;
+
 const Score = styled.div`
-  height 100%;
+  height: 100%;
   width: 15%;
 
   display: flex;
-  flex-direction: column:
+  flex-direction: column;
 
   justify-content: space-evenly;
   align-items: center;
@@ -34,9 +42,55 @@ const Score = styled.div`
 function OppCapt(props) {
   const { cards, points } = props;
 
+  const sortedCapture = () => {
+    const {
+      kwang, ribbon, animal, pi,
+    } = sortCapture(cards);
+    return (
+      <CaptureDiv>
+        <CardSection>
+          {kwang.map((cardId) => (
+            <Card
+              key={cardId}
+              cardIdProp={cardId}
+              flipProp={true}
+            />
+          ))}
+        </CardSection>
+        <CardSection>
+          {ribbon.map((cardId) => (
+            <Card
+              key={cardId}
+              cardIdProp={cardId}
+              flipProp={true}
+            />
+          ))}
+        </CardSection>
+        <CardSection>
+          {animal.map((cardId) => (
+            <Card
+              key={cardId}
+              cardIdProp={cardId}
+              flipProp={true}
+            />
+          ))}
+        </CardSection>
+        <CardSection>
+          {pi.map((cardId) => (
+            <Card
+              key={cardId}
+              cardIdProp={cardId}
+              flipProp={true}
+            />
+          ))}
+        </CardSection>
+      </CaptureDiv>
+    );
+  };
+
   return (
     <ContainerDiv>
-      <CaptureDiv>
+      {/* <CaptureDiv>
         {cards.map((cardId) => (
           <Card
             key={cardId}
@@ -44,10 +98,10 @@ function OppCapt(props) {
             flipProp={true}
           />
         ))}
-      </CaptureDiv>
+      </CaptureDiv> */}
+      {sortedCapture()}
       <Score>
-        <h4>Score:</h4>
-        <span>{points}</span>
+        <h4>{`Score: ${points}`}</h4>
         <span> </span>
       </Score>
     </ContainerDiv>

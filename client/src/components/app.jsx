@@ -25,7 +25,7 @@ const Board = styled.main`
   flex-direction: column;
 
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
 `;
 
 const GoStop = styled.dialog`
@@ -76,6 +76,8 @@ class App extends React.Component {
           playerId: 1,
           deck,
           winner: null,
+          playerCapture: [],
+          oppCapture: [],
         }, () => {
           const [p1Hand, p2Hand, field, newDeck] = dealCards(deck);
           this.setState({
@@ -170,7 +172,7 @@ class App extends React.Component {
     } = this.state;
 
     const goStopDiag = () => {
-      if (playerPoints >= 1) {
+      if (playerPoints >= 7) {
         return (
           <GoStop open>
             <p>{`You have ${playerPoints} points!

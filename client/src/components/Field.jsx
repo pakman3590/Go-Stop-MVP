@@ -5,18 +5,16 @@ import Card from './Card.jsx';
 import { fromField } from '../gameLogic';
 
 const CenterDiv = styled.div`
-  height: 30%;
+  height: 20%;
   width: 90%;
 
   display: flex;
   flex-direction: row;
-
-  border: 2px solid #000000;
 `;
 
 const FieldDiv = styled.div`
   height: 100%;
-  width: 80%;
+  width: 90%;
 
   align-items: center;
   display: flex;
@@ -25,10 +23,12 @@ const FieldDiv = styled.div`
 
 const DeckDiv = styled.div`
   height: 100%;
-  width: 20%;
+  width: 10%;
+
+  display: flex;
 
   align-items: center;
-  justify-items: center;
+  justify-items: flex-end;
 `;
 
 function Field(props) {
