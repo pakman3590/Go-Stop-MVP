@@ -16,7 +16,7 @@ const CenterDiv = styled.div`
 
 const FieldDiv = styled.div`
   height: 100%;
-  width: 80%;
+  width: 90%;
 
   align-items: center;
   display: flex;
@@ -25,10 +25,12 @@ const FieldDiv = styled.div`
 
 const DeckDiv = styled.div`
   height: 100%;
-  width: 20%;
+  width: 10%;
+
+  display: flex;
 
   align-items: center;
-  justify-items: center;
+  justify-items: flex-end;
 `;
 
 function Field(props) {

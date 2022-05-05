@@ -25,8 +25,10 @@ const Score = styled.div`
   width: 15%;
 
   display: flex;
-  flex-direction: column:
+  flex-direction: column;
 
+  justify-content: space-evenly;
+  align-items: center;
 `;
 
 function Capture(props) {
@@ -51,8 +53,7 @@ function Capture(props) {
         ))}
       </CaptureDiv>
       <Score>
-        <h4>Score:</h4>
-        <span>{points}</span>
+        <h4>{`Score: ${points}`}</h4>
         {turns()}
       </Score>
     </ContainerDiv>
