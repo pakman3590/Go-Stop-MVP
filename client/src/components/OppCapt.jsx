@@ -2,7 +2,6 @@ import React from 'react';
 import styled from 'styled-components';
 
 import Card from './Card.jsx';
-import { cardScore } from '../scoring';
 
 const ContainerDiv = styled.div`
   height: 25%;
@@ -33,7 +32,7 @@ const Score = styled.div`
 `;
 
 function OppCapt(props) {
-  const { cards } = props;
+  const { cards, points } = props;
 
   return (
     <ContainerDiv>
@@ -48,7 +47,7 @@ function OppCapt(props) {
       </CaptureDiv>
       <Score>
         <h4>Score:</h4>
-        <span>{cardScore(cards)[0]}</span>
+        <span>{points}</span>
         <span> </span>
       </Score>
     </ContainerDiv>
