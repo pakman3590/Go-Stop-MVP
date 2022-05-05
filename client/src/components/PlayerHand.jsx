@@ -10,8 +10,6 @@ const Hand = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: center;
-
-  border: 2px solid #000000;
 `;
 
 function PlayerHand(props) {

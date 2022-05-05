@@ -5,13 +5,11 @@ import Card from './Card.jsx';
 import { fromField } from '../gameLogic';
 
 const CenterDiv = styled.div`
-  height: 30%;
+  height: 20%;
   width: 90%;
 
   display: flex;
   flex-direction: row;
-
-  border: 2px solid #000000;
 `;
 
 const FieldDiv = styled.div`

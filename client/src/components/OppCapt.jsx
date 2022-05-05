@@ -9,8 +9,6 @@ const ContainerDiv = styled.div`
   width: 90%;
 
   display: flex;
-
-  border: 2px solid #000000;
 `;
 
 const CaptureDiv = styled.div`
@@ -23,10 +21,11 @@ const CaptureDiv = styled.div`
 
 const CardSection = styled.div`
   width: max-content;
-  padding: 0 15px 0 15px;
+  padding-right: 70px;
 
-  display: flex;
-  flex-direction: row;
+  display: grid;
+  grid-template-columns: repeat(5, 25px);
+  grid-template-rows: repeat(3, 60px);
 `;
 
 const Score = styled.div`

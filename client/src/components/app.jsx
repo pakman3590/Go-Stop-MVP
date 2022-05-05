@@ -25,7 +25,7 @@ const Board = styled.main`
   flex-direction: column;
 
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
 `;
 
 const GoStop = styled.dialog`

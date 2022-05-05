@@ -9,8 +9,7 @@ const Hand = styled.div`
 
   display: flex;
   flex-direction: row;
-
-  border: 2px solid #000000;
+  justify-content: center;
 `;
 
 const randId = () => Math.floor(Math.random() * 100000);
