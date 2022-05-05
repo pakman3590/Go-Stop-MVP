@@ -66,6 +66,32 @@ const playCard = (playedCardId, field, deck) => {
   return update;
 };
 
+const sortCards = (cards) => {
+  const months = {
+    jan: 1,
+    feb: 2,
+    mar: 3,
+    apr: 4,
+    may: 5,
+    jun: 6,
+    jul: 7,
+    aug: 8,
+    sep: 9,
+    oct: 10,
+    nov: 11,
+    dec: 12,
+  };
+  return cards.sort((a, b) => {
+    if (months[a.slice(0, 3)] < months[b.slice(0, 3)]) {
+      return -1;
+    }
+    if (months[a.slice(0, 3)] > months[b.slice(0, 3)]) {
+      return 1;
+    }
+    return 0;
+  });
+};
+
 const sortCapture = (cards) => {
   const sort = {
     kwang: [],
@@ -92,5 +118,5 @@ const sortCapture = (cards) => {
 };
 
 export {
-  updateHand, updateField, updateCapture, dealCards, playCard, sortCapture,
+  updateHand, updateField, updateCapture, dealCards, playCard, sortCards, sortCapture,
 };
