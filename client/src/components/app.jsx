@@ -170,7 +170,7 @@ class App extends React.Component {
     } = this.state;
 
     const goStopDiag = () => {
-      if (playerPoints >= 1) {
+      if (playerPoints >= 7) {
         return (
           <GoStop open>
             <p>{`You have ${playerPoints} points!

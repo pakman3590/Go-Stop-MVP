@@ -66,6 +66,31 @@ const playCard = (playedCardId, field, deck) => {
   return update;
 };
 
+const sortCapture = (cards) => {
+  const sort = {
+    kwang: [],
+    ribbon: [],
+    animal: [],
+    pi: [],
+  };
+  cards.forEach((cardId) => {
+    switch (true) {
+      case cardId.slice(3, 4) === 'k':
+        sort.kwang.push(cardId);
+        break;
+      case cardId.slice(3, 4) === 't':
+        sort.ribbon.push(cardId);
+        break;
+      case cardId.slice(3, 4) === 'y':
+        sort.animal.push(cardId);
+        break;
+      default:
+        sort.pi.push(cardId);
+    }
+  });
+  return sort;
+};
+
 export {
-  updateHand, updateField, updateCapture, dealCards, playCard,
+  updateHand, updateField, updateCapture, dealCards, playCard, sortCapture,
 };
