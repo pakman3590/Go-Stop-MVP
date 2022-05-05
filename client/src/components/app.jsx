@@ -5,7 +5,7 @@ import regeneratorRuntime from 'regenerator-runtime';
 
 import { newGame, fetchState, updateGame } from '../requests';
 import {
-  updateHand, updateField, updateCapture, dealCards, playCard,
+  updateHand, updateField, updateCapture, dealCards, playCard, sortCards,
 } from '../gameMechanics';
 import { cardScore } from '../scoring';
 
@@ -74,16 +74,16 @@ class App extends React.Component {
         this.setState({
           gameId,
           playerId: 1,
-          deck,
+          deck: sortCards(deck),
           winner: null,
           playerCapture: [],
           oppCapture: [],
         }, () => {
           const [p1Hand, p2Hand, field, newDeck] = dealCards(deck);
           this.setState({
-            playerHand: p1Hand,
-            oppHand: p2Hand,
-            field,
+            playerHand: sortCards(p1Hand),
+            oppHand: sortCards(p2Hand),
+            field: sortCards(field),
             deck: newDeck,
             active: true,
           });
