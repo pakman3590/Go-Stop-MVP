@@ -24,10 +24,17 @@ const CaptureDiv = styled.div`
 const Score = styled.div`
   height 100%;
   width: 15%;
+
+  display: flex;
+  flex-direction: column:
+
+  justify-content: space-evenly;
+  align-items: center;
 `;
 
-function Capture(props) {
+function OppCapt(props) {
   const { cards } = props;
+
   return (
     <ContainerDiv>
       <CaptureDiv>
@@ -40,11 +47,12 @@ function Capture(props) {
         ))}
       </CaptureDiv>
       <Score>
-        Score:
-        {cardScore(cards)[0]}
+        <h4>Score:</h4>
+        <span>{cardScore(cards)[0]}</span>
+        <span> </span>
       </Score>
     </ContainerDiv>
   );
 }
 
-export default Capture;
+export default OppCapt;

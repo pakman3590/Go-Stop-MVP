@@ -14,10 +14,14 @@ const CardDiv = styled.div`
 `;
 
 function HandCard(props) {
-  const { cardId, handleCardClick } = props;
+  const { cardId, handleCardClick, turn } = props;
 
   return (
-    <CardDiv onClick={() => handleCardClick(cardId)} >
+    <CardDiv onClick={() => {
+      if (turn % 2 !== 0) {
+        handleCardClick(cardId);
+      }
+    }} >
       <img src={`https://www.pagat.com/images/hwatu/${cardId}.gif`} />
     </CardDiv>
   );
