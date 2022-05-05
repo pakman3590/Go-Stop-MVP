@@ -2,7 +2,6 @@ import React from 'react';
 import styled from 'styled-components';
 
 import Card from './Card.jsx';
-// import { cardScore } from '../scoring';
 
 const ContainerDiv = styled.div`
   height: 25%;
@@ -39,13 +38,6 @@ function Capture(props) {
     }
     return <span>{'Opponent\'s Turn!'}</span>;
   };
-
-  // const score = () => {
-  //   const newScore = cardScore(cards)[0];
-  //   if (newScore >= 7) {
-  //     alert ()
-  //   }
-  // }
 
   return (
     <ContainerDiv>

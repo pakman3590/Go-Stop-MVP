@@ -28,6 +28,14 @@ const Board = styled.main`
   justify-content: center;
 `;
 
+const GoStop = styled.dialog`
+  z-index: 1;
+`;
+
+const NewGame = styled.dialog`
+  z-index: 1;
+`;
+
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -46,11 +54,13 @@ class App extends React.Component {
       field: [],
       deck: null,
       turn: 1,
+      winner: null,
     };
 
     this.startNewGame = this.startNewGame.bind(this);
     this.handleCardClick = this.handleCardClick.bind(this);
     this.dumbAi = this.dumbAi.bind(this);
+    this.handleGoStop = this.handleGoStop.bind(this);
   }
 
   componentDidMount() {
@@ -65,6 +75,7 @@ class App extends React.Component {
           gameId,
           playerId: 1,
           deck,
+          winner: null,
         }, () => {
           const [p1Hand, p2Hand, field, newDeck] = dealCards(deck);
           this.setState({
@@ -140,13 +151,51 @@ class App extends React.Component {
     });
   }
 
+  handleGoStop(choice) {
+    if (choice) {
+      // DO SOMETHING
+    } else {
+      this.setState({
+        winner: 'player1',
+      });
+    }
+  }
+
   render() {
     const {
       active,
       playerId, playerHand, playerCapture, playerPoints,
       oppHand, oppCapture, oppPoints,
-      field, turn,
+      field, turn, winner,
     } = this.state;
+
+    const goStopDiag = () => {
+      if (playerPoints >= 1) {
+        return (
+          <GoStop open>
+            <p>{`You have ${playerPoints} points!
+            Go or Stop?`}</p>
+            <form method="dialog">
+              <button>GO</button>
+              <button onClick={() => this.handleGoStop(false)}>STOP</button>
+            </form>
+          </GoStop>
+        );
+      }
+      return <dialog></dialog>;
+    };
+
+    const endGameDiag = () => {
+      if (winner) {
+        return (
+          <NewGame open>
+            <p>You Win!</p>
+            <button onClick={this.startNewGame}>New Game</button>
+          </NewGame>
+        );
+      }
+      return <dialog></dialog>;
+    };
 
     const renderGame = () => {
       if (active) {
@@ -158,6 +207,8 @@ class App extends React.Component {
             />
             <OppHand hand={oppHand} />
             <Field field={field} />
+            {goStopDiag()}
+            {endGameDiag()}
             <PlayerHand
               hand={playerHand}
               handleCardClick={this.handleCardClick}
@@ -178,7 +229,9 @@ class App extends React.Component {
     };
 
     return (
-      renderGame()
+      <div>
+        {renderGame()}
+      </div>
     );
   }
 }
