@@ -59,9 +59,9 @@ app.get('/:gameId/:playerId', (req, res) => {
 
 app.put('/:gameId', (req, res) => {
   const { gameId } = req.params;
-  const { turn } = req.data;
+  const { turn } = req.body[1];
   console.log(`Updating game ${gameId} turn ${turn}`);
-  Game.findOneAndUpdate({ _id: gameId }, req.data, (err) => {
+  Game.findOneAndUpdate({ _id: gameId }, req.body[1], (err) => {
     if (err) {
       console.log(err);
       res.sendStatus(404);

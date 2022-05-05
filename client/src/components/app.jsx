@@ -140,7 +140,6 @@ class App extends React.Component {
     const {
       active, playerHand, playerCapture, oppHand, oppCapture, field,
     } = this.state;
-    console.log(this.state);
 
     const renderGame = () => {
       if (active) {
