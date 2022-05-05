@@ -8,7 +8,8 @@ import {
   updateHand, updateField, updateCapture, dealCards, playCard,
 } from '../gameMechanics';
 
-import Capture from './Capture.jsx';
+import PlayerCapt from './PlayerCapt.jsx';
+import OppCapt from './OppCapt.jsx';
 import OppHand from './OppHand.jsx';
 import Field from './Field.jsx';
 import PlayerHand from './PlayerHand.jsx';
@@ -138,21 +139,26 @@ class App extends React.Component {
 
   render() {
     const {
-      active, playerHand, playerCapture, oppHand, oppCapture, field,
+      active, playerId, playerHand, playerCapture, oppHand, oppCapture, field, turn,
     } = this.state;
 
     const renderGame = () => {
       if (active) {
         return (
           <Board>
-            <Capture cards={oppCapture} />
+            <OppCapt cards={oppCapture} />
             <OppHand hand={oppHand} />
             <Field field={field} />
             <PlayerHand
               hand={playerHand}
               handleCardClick={this.handleCardClick}
+              turn={turn}
             />
-            <Capture cards={playerCapture} />
+            <PlayerCapt
+              playerId={playerId}
+              cards={playerCapture}
+              turn={turn}
+            />
           </Board>
         );
       }

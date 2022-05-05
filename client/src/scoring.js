@@ -101,4 +101,4 @@ const cardScore = (captured) => {
   return [total, kwangScore, ribbonScore, animalScore, piScore];
 };
 
-export default { cardScore };
+export { cardScore };

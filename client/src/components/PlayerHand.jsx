@@ -15,13 +15,14 @@ const Hand = styled.div`
 `;
 
 function PlayerHand(props) {
-  const { hand, handleCardClick } = props;
+  const { hand, handleCardClick, turn } = props;
 
   return (
     <Hand>
       {hand.map((cardId) => (
         <HandCard
         key={cardId}
+        turn={turn}
         cardId={cardId}
         handleCardClick={handleCardClick}
         />
