@@ -19,6 +19,6 @@ Go-Stop is a classic Korean card game played with hanafuda-inspired playing card
 
 
 <h2>Roadmap</h2>
-- Rework to utilize socket.io to allow for multiple players to play against each other
-- Implement user authentication
-- Implement mid-game save and retrieval
+<li>Rework to utilize socket.io to allow for multiple players to play against each other</li>
+<li>Implement user authentication</li>
+<li>Implement mid-game save and retrieval</li>
