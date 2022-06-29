@@ -16,3 +16,9 @@ Go-Stop is a classic Korean card game played with hanafuda-inspired playing card
 | ![Express.js](https://img.shields.io/badge/express.js-%23404d59.svg?style=for-the-badge&logo=express&logoColor=%2361DAFB) | Back-End Web App Framework |
 | ![MongoDB](https://img.shields.io/badge/MongoDB-%234ea94b.svg?style=for-the-badge&logo=mongodb&logoColor=white) | Non-Relational DBMS |
 | ![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB) | Front-End Framework |
+
+
+<h2>Roadmap</h2>
+- Rework to utilize socket.io to allow for multiple players to play against each other
+- Implement user authentication
+- Implement mid-game save and retrieval
